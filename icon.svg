@@ -1,20 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="120" fill="#445447"/>
-  <circle cx="256" cy="256" r="150" fill="#efe9df"/>
-
-  <g transform="rotate(-4 256 238)">
-    <text x="256" y="310"
-          text-anchor="middle"
-          font-family="Arial Rounded MT Bold, Trebuchet MS, sans-serif"
-          font-size="224"
-          font-weight="700"
-          fill="#445447">5</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#7E8F79"/>
+  <rect x="14" y="14" width="484" height="484" rx="98" fill="none" stroke="#F4EBDD" stroke-width="14"/>
+  
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <g fill="#D8473E" stroke="#4A4A45" stroke-width="9">
+      <circle cx="210" cy="205" r="56"/>
+      <circle cx="302" cy="198" r="53"/>
+      <circle cx="188" cy="309" r="49"/>
+      <circle cx="276" cy="298" r="57"/>
+      <circle cx="362" cy="291" r="48"/>
+    </g>
+    <g fill="#6D8F58" stroke="#4A4A45" stroke-width="6">
+      <path d="M210 142l11 20 22-6-12 19 16 15-23-2-14 18-3-23-22-8 21-10z"/>
+      <path d="M302 139l9 18 20-4-12 16 14 14-20-1-12 17-4-20-19-8 18-8z"/>
+      <path d="M188 261l9 16 18-3-10 14 12 12-17-1-11 15-3-18-17-7 16-7z"/>
+      <path d="M276 239l11 19 21-5-12 18 15 14-22-2-13 18-4-22-21-8 20-9z"/>
+      <path d="M362 247l8 15 17-3-10 13 12 11-17-1-10 14-3-17-16-6 15-7z"/>
+    </g>
   </g>
 
-  <text x="256" y="387"
-        text-anchor="middle"
-        font-family="Georgia, serif"
-        font-size="28"
-        letter-spacing="5"
-        fill="#445447">OJ</text>
 </svg>
