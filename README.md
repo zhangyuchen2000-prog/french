@@ -1,3 +1,13 @@
+# Cinq — Easy learn interaction
+
+Updated behavior:
+
+- Tap the round tick beside a word to mark it learned immediately.
+- Tap the tick again to undo.
+- Tap the word itself to open details.
+- Press `Mark as learned` inside the detail view and the window closes automatically.
+- Daily progress now uses the phone's local date, preventing progress from moving to the wrong day around midnight.
+
 # Cinq — Édito A1 complete core lexicon edition
 
 This update keeps the latest Cinq interface and replaces the small demo list with a structured learning database based on all ten units of **Édito A1, 2e édition (2022)**.

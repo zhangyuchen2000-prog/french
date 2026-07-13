@@ -10,7 +10,12 @@ let quizIndex = 0;
 let quizScore = 0;
 let quizAnswered = false;
 
-function dateKey(date = new Date()) { return date.toISOString().slice(0,10); }
+function dateKey(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 function dayNumber(date = new Date()) {
   const start = new Date('2026-01-01T00:00:00');
   return Math.floor((new Date(date.getFullYear(), date.getMonth(), date.getDate()) - start) / 86400000);
@@ -74,18 +79,37 @@ function render(){
   const today = new Date();
   $('#dateLabel').textContent = today.toLocaleDateString('en-NZ',{weekday:'long', day:'numeric', month:'long'});
   const words = todaysWords();
-  $('#wordList').innerHTML = words.map((w,i)=>`
-    <button class="word-card ${isLearned(w)?'learned':''}" data-word="${wordId(w).replace(/"/g,'&quot;')}">
-      <span class="word-index">${String(i+1).padStart(2,'0')}</span>
-      <span><span class="word-fr">${w.fr}</span><span class="word-en">${w.en}${state.settings.showChinese?' · '+w.zh:''}</span></span>
-      <span class="check">${isLearned(w)?'✓':''}</span>
-    </button>`).join('');
+  $('#wordList').innerHTML = words.map((w,i)=>{
+    const learned = isLearned(w);
+    const id = wordId(w).replace(/"/g,'&quot;');
+    return `
+      <article class="word-card ${learned?'learned':''}">
+        <button class="word-main" data-word="${id}" aria-label="Open ${w.fr}">
+          <span class="word-index">${String(i+1).padStart(2,'0')}</span>
+          <span class="word-copy">
+            <span class="word-fr">${w.fr}</span>
+            <span class="word-en">${w.en}${state.settings.showChinese?' · '+w.zh:''}</span>
+          </span>
+        </button>
+        <button
+          class="check-toggle"
+          data-check="${id}"
+          aria-label="${learned?'Mark as not learned':'Mark as learned'}"
+          aria-pressed="${learned?'true':'false'}"
+        >${learned?'✓':''}</button>
+      </article>`;
+  }).join('');
   const count = learnedCount();
   $('#progressText').textContent = `${count} / 5 learned`;
   $('#progressBar').style.width = `${count*20}%`;
   $('#streakCount').textContent = calculateStreak();
   renderWeek();
-  document.querySelectorAll('.word-card').forEach(b=>b.addEventListener('click',()=>openWord(findSavedWord(b.dataset.word))));
+  document.querySelectorAll('.word-main').forEach(button =>
+    button.addEventListener('click', () => openWord(findSavedWord(button.dataset.word)))
+  );
+  document.querySelectorAll('.check-toggle').forEach(button =>
+    button.addEventListener('click', () => toggleWordDirectly(findSavedWord(button.dataset.check)))
+  );
 }
 
 function calculateStreak(){
@@ -109,14 +133,32 @@ function openWord(word){
   $('#dialogPhonetic').textContent=word.phon || word.source;
   $('#dialogMeaning').textContent=`${word.en}${state.settings.showChinese?' · '+word.zh:''}`;
   $('#dialogExample').textContent=word.ex; $('#dialogTranslation').textContent=word.tr;
-  $('#learnBtn').textContent=isLearned(word)?'Learned ✓':'Mark as learned'; $('#wordDialog').showModal();
+  $('#learnBtn').textContent=isLearned(word)?'Mark as not learned':'Mark as learned';
+  $('#wordDialog').showModal();
 }
+function setLearned(word, learned){
+  const key = dateKey();
+  state.learned[key] = state.learned[key] || [];
+  const id = wordId(word);
+  const index = state.learned[key].indexOf(id);
+
+  if (learned && index < 0) state.learned[key].push(id);
+  if (!learned && index >= 0) state.learned[key].splice(index, 1);
+
+  save();
+}
+
+function toggleWordDirectly(word){
+  if (!word) return;
+  setLearned(word, !isLearned(word));
+  render();
+}
+
 function toggleLearned(){
-  const key=dateKey(); state.learned[key]=state.learned[key]||[];
-  const id=wordId(activeWord);
-  const idx=state.learned[key].indexOf(id);
-  if(idx>=0) state.learned[key].splice(idx,1); else state.learned[key].push(id);
-  save(); render(); $('#learnBtn').textContent=isLearned(activeWord)?'Learned ✓':'Mark as learned';
+  if (!activeWord) return;
+  setLearned(activeWord, !isLearned(activeWord));
+  $('#wordDialog').close();
+  render();
 }
 function speak(text){
   speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='fr-FR'; u.rate=.82; speechSynthesis.speak(u);
