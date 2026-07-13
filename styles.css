@@ -47,6 +47,7 @@ h1 { margin: 0; font-family: Georgia, serif; font-size: 34px; font-weight: 500; 
 .check { width: 28px; height: 28px; border-radius: 999px; border: 1.5px solid var(--line); display: grid; place-content: center; color: white; }
 .learned .check { background: var(--sage); border-color: var(--sage); }
 .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 22px 0 34px; }
+.wide-action { grid-column: 1 / -1; }
 .primary-btn, .secondary-btn { min-height: 52px; border-radius: 16px; padding: 12px 18px; font-weight: 750; border: 1px solid transparent; }
 .primary-btn { background: var(--ink); color: white; }
 .secondary-btn { background: transparent; color: var(--ink); border-color: var(--line); }
