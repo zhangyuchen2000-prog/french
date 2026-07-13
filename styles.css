@@ -88,3 +88,20 @@ h1 { margin: 0; font-family: Georgia, serif; font-size: 34px; font-weight: 500; 
   .day-cell { border-radius: 12px; }
   .modal { padding: 26px 20px; }
 }
+
+.unit-setting { align-items: flex-start; flex-direction: column; gap: 8px; }
+.unit-setting select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255,255,255,.75);
+  color: var(--ink);
+  padding: 12px 14px;
+  font: inherit;
+}
+.book-note {
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: .82rem;
+  text-align: center;
+}

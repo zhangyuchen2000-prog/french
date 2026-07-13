@@ -46,6 +46,7 @@
       <button id="reviewBtn" class="secondary-btn">Review learned words</button>
     </section>
 
+    <p class="book-note">768 learning cards · 10 units · Édito A1, 2e édition</p>
     <section class="week-section">
       <div class="section-heading">
         <h3>This week</h3>
@@ -89,10 +90,27 @@
       <span>Show Chinese meaning</span>
       <input id="showChinese" type="checkbox" checked />
     </label>
+    <label class="setting-row unit-setting">
+      <span>Study unit</span>
+      <select id="unitFilter">
+        <option value="all">All 10 units</option>
+        <option value="1">Unité 1 · Je suis…</option>
+        <option value="2">Unité 2 · Près de moi</option>
+        <option value="3">Unité 3 · Qu’est-ce qu’on mange ?</option>
+        <option value="4">Unité 4 · C’est par là !</option>
+        <option value="5">Unité 5 · Recyclons !</option>
+        <option value="6">Unité 6 · Quel programme !</option>
+        <option value="7">Unité 7 · Chez moi</option>
+        <option value="8">Unité 8 · En forme !</option>
+        <option value="9">Unité 9 · Bonnes vacances !</option>
+        <option value="10">Unité 10 · Au travail !</option>
+      </select>
+    </label>
     <button id="saveSettings" class="primary-btn">Save settings</button>
     <p class="settings-note">Your progress stays on this device. Add the app to your Home Screen for an app-like experience.</p>
   </dialog>
 
+  <script src="words.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
