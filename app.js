@@ -94,6 +94,20 @@ function showNewWords() {
   save();
   render();
 }
+
+// Every fresh page load/open gets a new random batch.
+// This runs only once when the script starts, so normal actions inside the app
+// (opening a card, taking the quiz, changing a learned status) do not reshuffle.
+function initializeEntryWords() {
+  if (WORDS.length === 0) return;
+
+  const previousWords = todaysWords();
+  const next = randomWordsExcluding(previousWords);
+
+  if (next.length === 5) {
+    state.batches[dateKey()] = next.map(word => wordId(word));
+  }
+}
 function save(){ localStorage.setItem('cinq-state', JSON.stringify(state)); }
 function wordId(word){ return `${word.unit}|${word.fr}`; }
 
@@ -236,5 +250,8 @@ $('#saveSettings').addEventListener('click',()=>{
 });
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+
+// Pick a fresh random five whenever the app is newly opened or refreshed.
+initializeEntryWords();
 save();
 render();
