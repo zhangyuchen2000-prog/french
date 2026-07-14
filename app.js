@@ -3,6 +3,16 @@ const WORDS = window.EDITO_WORDS || [];
 const $ = s => document.querySelector(s);
 const state = JSON.parse(localStorage.getItem('cinq-state') || '{}');
 state.learned = state.learned || {};
+state.learnedWords = state.learnedWords || [];
+
+// Migrate older date-based learning records into one permanent global list.
+Object.values(state.learned).forEach(ids => {
+  if (!Array.isArray(ids)) return;
+  ids.forEach(id => {
+    if (!state.learnedWords.includes(id)) state.learnedWords.push(id);
+  });
+});
+
 state.batches = state.batches || {};
 state.settings = state.settings || {showChinese:true, reminderTime:'19:00'};
 let activeWord = null;
@@ -51,9 +61,23 @@ function randomWordsExcluding(currentWords) {
   const current = new Set(currentWords.map(word => `${word.unit}|${word.fr}`));
   const seenKey = state.settings.unit;
   let seen = new Set(state.seen[seenKey] || []);
-  let preferred = pool.filter(word => !current.has(`${word.unit}|${word.fr}`) && !seen.has(`${word.unit}|${word.fr}`));
+  const learned = new Set(state.learnedWords);
+  let preferred = pool.filter(word => {
+    const id = `${word.unit}|${word.fr}`;
+    return !current.has(id) && !seen.has(id) && !learned.has(id);
+  });
+
+  // If fewer than five unlearned/unseen words remain, reuse unseen words first.
   if (preferred.length < 5) {
     seen = new Set();
+    preferred = pool.filter(word => {
+      const id = `${word.unit}|${word.fr}`;
+      return !current.has(id) && !learned.has(id);
+    });
+  }
+
+  // Only after every available word has been learned may learned words return.
+  if (preferred.length < 5) {
     preferred = pool.filter(word => !current.has(`${word.unit}|${word.fr}`));
   }
   for (let i = preferred.length - 1; i > 0; i--) {
@@ -72,8 +96,19 @@ function showNewWords() {
 }
 function save(){ localStorage.setItem('cinq-state', JSON.stringify(state)); }
 function wordId(word){ return `${word.unit}|${word.fr}`; }
-function isLearned(word, date = new Date()){ return (state.learned[dateKey(date)] || []).includes(wordId(word)); }
-function learnedCount(date = new Date()){ return todaysWords(date).filter(w=>isLearned(w,date)).length; }
+
+// Learned words are permanent and are no longer tied to one date or one batch.
+function isLearned(word){
+  return state.learnedWords.includes(wordId(word));
+}
+
+function learnedCount(date = new Date()){
+  return todaysWords(date).filter(w => isLearned(w)).length;
+}
+
+function totalLearnedCount(){
+  return state.learnedWords.length;
+}
 
 function render(){
   const today = new Date();
@@ -100,7 +135,8 @@ function render(){
       </article>`;
   }).join('');
   const count = learnedCount();
-  $('#progressText').textContent = `${count} / 5 learned`;
+  const total = totalLearnedCount();
+  $('#progressText').textContent = `${count} / 5 this batch · ${total} learned in total`;
   $('#progressBar').style.width = `${count*20}%`;
   $('#streakCount').textContent = calculateStreak();
   renderWeek();
@@ -137,13 +173,11 @@ function openWord(word){
   $('#wordDialog').showModal();
 }
 function setLearned(word, learned){
-  const key = dateKey();
-  state.learned[key] = state.learned[key] || [];
   const id = wordId(word);
-  const index = state.learned[key].indexOf(id);
+  const index = state.learnedWords.indexOf(id);
 
-  if (learned && index < 0) state.learned[key].push(id);
-  if (!learned && index >= 0) state.learned[key].splice(index, 1);
+  if (learned && index < 0) state.learnedWords.push(id);
+  if (!learned && index >= 0) state.learnedWords.splice(index, 1);
 
   save();
 }
@@ -202,4 +236,5 @@ $('#saveSettings').addEventListener('click',()=>{
 });
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+save();
 render();
